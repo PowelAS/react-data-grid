@@ -24,6 +24,7 @@ export const shouldRowUpdate = (nextProps, currentProps) => {
     doesRowContainSelectedCell(nextProps) ||
     willRowBeDraggedOver(nextProps) ||
     nextProps.row !== currentProps.row ||
+    nextProps.validationMessage !== currentProps.validationMessage ||
     currentProps.colDisplayStart !== nextProps.colDisplayStart ||
     currentProps.colDisplayEnd !== nextProps.colDisplayEnd ||
     currentProps.colVisibleStart !== nextProps.colVisibleStart ||
