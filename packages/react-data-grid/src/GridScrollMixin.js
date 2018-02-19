@@ -23,6 +23,7 @@ module.exports = {
     if (this._scrollLeft !== props.scrollLeft) {
       this._scrollLeft = props.scrollLeft;
       this._onScroll();
+      this.props.onCanvasScroll && this.props.onCanvasScroll(props);
     }
   },
 
