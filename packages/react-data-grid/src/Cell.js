@@ -35,7 +35,6 @@ const Cell = React.createClass({
     className: React.PropTypes.string,
     cellControls: React.PropTypes.any,
     rowData: React.PropTypes.object.isRequired,
-    validationMessage: React.PropTypes.object,
     forceUpdate: React.PropTypes.bool,
     expandableOptions: React.PropTypes.object.isRequired,
     isScrolling: React.PropTypes.bool.isRequired,
@@ -90,7 +89,6 @@ const Cell = React.createClass({
       || this.props.column.cellClass !== nextProps.column.cellClass
       || this.props.height !== nextProps.height
       || this.props.rowIdx !== nextProps.rowIdx
-      || this.props.validationMessage !== nextProps.validationMessage
       || this.isCellSelectionChanging(nextProps)
       || this.isDraggedCellChanging(nextProps)
       || this.isCopyCellChanging(nextProps)
@@ -511,7 +509,7 @@ const Cell = React.createClass({
       isExpanded: this.props.isExpanded
     });
 
-    let dragHandle = (!this.isActive() && ColumnUtils.canEdit(this.props.column, this.props.rowData, this.props.validationMessage, this.props.cellMetaData.enableCellSelect)) ? <div className="drag-handle" draggable="true" onDoubleClick={this.onDragHandleDoubleClick}><span style={{ display: 'none' }}></span></div> : null;
+    let dragHandle = (!this.isActive() && ColumnUtils.canEdit(this.props.column, this.props.rowData, this.props.cellMetaData.enableCellSelect)) ? <div className="drag-handle" draggable="true" onDoubleClick={this.onDragHandleDoubleClick}><span style={{ display: 'none' }}></span></div> : null;
     let events = this.getEvents();
     const tooltip = this.props.tooltip ? (<span className="cell-tooltip-text">{this.props.tooltip}</span>) : null;
 

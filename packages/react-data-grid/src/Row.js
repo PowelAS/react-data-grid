@@ -24,7 +24,6 @@ const Row = React.createClass({
     height: PropTypes.number.isRequired,
     columns: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
     row: PropTypes.any.isRequired,
-    validationMessage: PropTypes.object,
     cellRenderer: PropTypes.func,
     cellMetaData: PropTypes.shape(cellMetaDataShape),
     isSelected: PropTypes.bool,
@@ -89,12 +88,11 @@ const Row = React.createClass({
       return <OverflowCell ref={(node) => this[key] = node} {...baseCellProps} />;
     }
 
-    const { row, isSelected, validationMessage } = this.props;
+    const { row, isSelected } = this.props;
     const cellProps = {
       ref: (node) => this[key] = node,
       value: this.getCellValue(key || i),
       rowData: row,
-      validationMessage: validationMessage,
       isRowSelected: isSelected,
       expandableOptions: this.getExpandableOptions(key),
       selectedColumn,
