@@ -101,7 +101,8 @@ const ReactDataGrid = React.createClass({
             rowKey: React.PropTypes.string.isRequired
           }).isRequired
         })
-      ]).isRequired
+      ]).isRequired,
+      selectedRowCounts: React.PropTypes.number
     }),
     onRowClick: React.PropTypes.func,
     onGridKeyUp: React.PropTypes.func,
@@ -144,6 +145,28 @@ const ReactDataGrid = React.createClass({
       initialState.selected = {rowIdx: -1, idx: -1};
     }
     return initialState;
+  },
+
+  componentDidUpdate() {
+    const { rowsCount, rowSelection } = this.props;
+
+    if (rowSelection != null) {
+      const { selectedRowCounts } = rowSelection;
+
+      if (this.selectAllCheckbox && selectedRowCounts >= 0) {
+        const { checked } = this.selectAllCheckbox;
+        const isEmptySelected = selectedRowCounts === 0;
+        const isFullySelected = selectedRowCounts === rowsCount && rowsCount !== 0;
+
+        if (isEmptySelected && checked) {
+          this.selectAllCheckbox.checked = false;
+        }
+
+        if (isFullySelected && !checked) {
+          this.selectAllCheckbox.checked = true;
+        }
+      }
+    }
   },
 
   hasSelectedCellChanged: function(selected: SelectedType) {
@@ -525,6 +548,8 @@ const ReactDataGrid = React.createClass({
       this.selectAllCheckbox.checked = false;
     }
 
+    const { rowsCount } = this.props;
+    const { selectedRowCounts } = this.props.rowSelection;
     let {keys, indexes, isSelectedKey} = this.props.rowSelection.selectBy;
     let isPreviouslySelected = RowUtils.isRowSelected(keys, indexes, isSelectedKey, rowData, rowIdx);
 
@@ -533,6 +558,10 @@ const ReactDataGrid = React.createClass({
     if (isPreviouslySelected && typeof this.props.rowSelection.onRowsDeselected === 'function') {
       this.props.rowSelection.onRowsDeselected([{rowIdx, row: rowData}]);
     } else if (!isPreviouslySelected && typeof this.props.rowSelection.onRowsSelected === 'function') {
+      if (selectedRowCounts === rowsCount - 1) {
+        this.selectAllCheckbox.checked = true;
+      }
+
       this.props.rowSelection.onRowsSelected([{rowIdx, row: rowData}]);
     }
   },
