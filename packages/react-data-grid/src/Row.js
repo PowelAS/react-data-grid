@@ -204,8 +204,7 @@ const Row = React.createClass({
 
     let style = {
       height: this.getRowHeight(this.props),
-      overflow: 'hidden',
-      contain: 'layout'
+      overflow: 'hidden'
     };
 
     let cells = this.getCells();
