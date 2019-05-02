@@ -225,10 +225,8 @@ class ReactDataGrid extends React.Component {
     enableCellSelect: false,
     rowHeight: 35,
     headerFiltersHeight: 45,
-    enableRowSelect: false,
     minHeight: 350,
     rowKey: 'id',
-    rowScrollTimeout: 0,
     scrollToRowIndex: 0,
     cellNavigationMode: CellNavigationMode.NONE,
     overScan: {
@@ -849,7 +847,6 @@ class ReactDataGrid extends React.Component {
             onViewportKeydown={this.onKeyDown}
             onViewportKeyup={this.onKeyUp}
             onColumnResize={this.onColumnResize}
-            rowScrollTimeout={this.props.rowScrollTimeout}
             scrollToRowIndex={this.props.scrollToRowIndex}
             contextMenu={this.props.contextMenu}
             overScan={this.props.overScan}

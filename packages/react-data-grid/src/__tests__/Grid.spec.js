@@ -94,7 +94,6 @@ describe('Rendering Grid component', () => {
         onColumnEvent: jasmine.createSpy()
       },
       rowKey: 'rowKeyValue',
-      rowScrollTimeout: 300,
       contextMenu: <ContextMenu />,
       getSubRowDetails: jasmine.createSpy(),
       draggableHeaderCell: jasmine.createSpy(),

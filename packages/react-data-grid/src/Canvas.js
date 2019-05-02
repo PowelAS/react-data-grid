@@ -43,7 +43,6 @@ class Canvas extends React.PureComponent {
     cellMetaData: PropTypes.shape(cellMetaDataShape).isRequired,
     selectedRows: PropTypes.array,
     rowKey: PropTypes.string,
-    rowScrollTimeout: PropTypes.number,
     scrollToRowIndex: PropTypes.number,
     contextMenu: PropTypes.element,
     getSubRowDetails: PropTypes.func,
@@ -84,7 +83,6 @@ class Canvas extends React.PureComponent {
   static defaultProps = {
     onRows: () => { },
     selectedRows: [],
-    rowScrollTimeout: 0,
     scrollToRowIndex: 0,
     RowsContainer: DefaultRowsContainer
   };

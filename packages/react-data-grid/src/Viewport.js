@@ -48,7 +48,6 @@ class Viewport extends React.Component {
     minHeight: PropTypes.number,
     cellMetaData: PropTypes.shape(cellMetaDataShape),
     rowKey: PropTypes.string.isRequired,
-    rowScrollTimeout: PropTypes.number,
     scrollToRowIndex: PropTypes.number,
     contextMenu: PropTypes.element,
     getSubRowDetails: PropTypes.func,
@@ -286,7 +285,6 @@ class Viewport extends React.Component {
           rowHeight={this.props.rowHeight}
           onScroll={this.onScroll}
           onRows={this.props.onRows}
-          rowScrollTimeout={this.props.rowScrollTimeout}
           scrollToRowIndex={this.props.scrollToRowIndex}
           contextMenu={this.props.contextMenu}
           rowSelection={this.props.rowSelection}
