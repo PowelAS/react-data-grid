@@ -1,6 +1,6 @@
 import { getSize, getColumn, isFrozen } from '../ColumnUtils';
 
-export const OVERSCAN_ROWS = 4;
+export const OVERSCAN_ROWS = 2;
 
 export const SCROLL_DIRECTION = {
   UP: 'upwards',

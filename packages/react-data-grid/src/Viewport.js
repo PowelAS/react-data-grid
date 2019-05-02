@@ -109,9 +109,16 @@ class Viewport extends React.Component {
     }
   };
 
-  getNextScrollState({ scrollTop, scrollLeft, height, rowHeight, rowsCount }) {
+  getNextScrollState({
+    scrollTop,
+    scrollLeft,
+    height,
+    rowHeight,
+    rowsCount,
+    columnMetrics = this.props.columnMetrics
+  }) {
     const isScrolling = true;
-    const { columns } = this.props.columnMetrics;
+    const { columns } = columnMetrics;
     const scrollDirection = getScrollDirection(this.state, scrollTop, scrollLeft);
     const { rowVisibleStartIdx, rowVisibleEndIdx } = getVisibleBoundaries(height, rowHeight, scrollTop, rowsCount);
     const rowOverscanStartIdx = getRowOverscanStartIdx(scrollDirection, rowVisibleStartIdx);
@@ -201,7 +208,15 @@ class Viewport extends React.Component {
         rowsCount
       });
     } else if (getSize(this.props.columnMetrics.columns) !== getSize(nextProps.columnMetrics.columns)) {
-      this.setState(getGridState(nextProps));
+      const { scrollTop, scrollLeft, height } = this.state;
+      this.updateScroll({
+        scrollTop,
+        scrollLeft,
+        height,
+        rowHeight,
+        rowsCount,
+        columnMetrics: nextProps.columnMetrics
+      });
     } else if (this.props.rowsCount !== nextProps.rowsCount) {
       const { scrollTop, scrollLeft, height } = this.state;
       this.updateScroll({
