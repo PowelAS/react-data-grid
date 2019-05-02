@@ -9,6 +9,7 @@ require('../../../themes/react-data-grid-row.css');
 
 // The list of the propTypes that we want to include in the Row div
 const knownDivPropertyKeys = ['height'];
+const DEFAULT_EXPANDABLE_OPTIONS = {};
 
 class Row extends React.Component {
   static displayName = 'Row';
@@ -107,10 +108,10 @@ class Row extends React.Component {
 
   getCells = () => {
     const { colOverscanStartIdx, colOverscanEndIdx, columns } = this.props;
-    const frozenColumns = columns.filter(c => isFrozen(c));
+    const frozenColumns = columns.filter(isFrozen);
     const nonFrozenColumn = columns.slice(colOverscanStartIdx, colOverscanEndIdx + 1).filter(c => !isFrozen(c));
     return nonFrozenColumn.concat(frozenColumns)
-      .map(column => this.getCell(column));
+      .map(this.getCell);
   };
 
   getRowTop = () => {
@@ -147,7 +148,7 @@ class Row extends React.Component {
     if (subRowDetails) {
       return { canExpand: subRowDetails && subRowDetails.field === columnKey && ((subRowDetails.children && subRowDetails.children.length > 0) || subRowDetails.group === true), field: subRowDetails.field, expanded: subRowDetails && subRowDetails.expanded, children: subRowDetails && subRowDetails.children, treeDepth: subRowDetails ? subRowDetails.treeDepth : 0, subRowDetails: subRowDetails };
     }
-    return {};
+    return DEFAULT_EXPANDABLE_OPTIONS;
   };
 
   setScrollLeft = (scrollLeft) => {
