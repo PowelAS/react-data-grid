@@ -1,6 +1,6 @@
 import { getSize, getColumn, isFrozen } from '../ColumnUtils';
 
-export const OVERSCAN_ROWS = 2;
+export const OVERSCAN_ROWS = 4;
 
 export const SCROLL_DIRECTION = {
   UP: 'upwards',
@@ -99,7 +99,7 @@ export const getVisibleBoundaries = (gridHeight, rowHeight, scrollTop, rowsCount
   const renderedRowsCount = ceil(gridHeight / rowHeight);
   const rowVisibleStartIdx = max(0, Math.round(scrollTop / rowHeight));
   const rowVisibleEndIdx  = min(rowVisibleStartIdx  + renderedRowsCount, rowsCount);
-  return { rowVisibleStartIdx, rowVisibleEndIdx  };
+  return { rowVisibleStartIdx: max(0, rowVisibleStartIdx - 1), rowVisibleEndIdx  };
 };
 
 
