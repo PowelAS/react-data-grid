@@ -20,7 +20,7 @@ const HeaderRowStyle = {
 };
 
 // The list of the propTypes that we want to include in the HeaderRow div
-const knownDivPropertyKeys = ['width', 'height', 'style', 'onScroll'];
+const knownDivPropertyKeys = ['style', 'onScroll'];
 
 class HeaderRow extends React.Component {
   static displayName = 'HeaderRow';

@@ -29,7 +29,7 @@ class Row extends React.Component {
     expandedRows: PropTypes.arrayOf(PropTypes.object),
     /** Space separated list of extra css classes to apply to row */
     extraClasses: PropTypes.string,
-    /** Will force an update to the row if true */
+    /** Will force an updatef to the row if true */
     forceUpdate: PropTypes.bool,
     /** */
     subRowDetails: PropTypes.object,
@@ -161,8 +161,7 @@ class Row extends React.Component {
       'react-grid-Row',
       `react-grid-Row--${this.props.idx % 2 === 0 ? 'even' : 'odd'}`,
       this.props.isSelected && 'row-selected',
-      this.props.extraClasses,
-      this.props.isScrolling && 'rdg-scrolling'
+      this.props.extraClasses
     );
 
     const style = {
