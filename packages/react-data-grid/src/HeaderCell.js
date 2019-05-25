@@ -114,11 +114,13 @@ class HeaderCell extends React.Component {
         onDragEnd={this.onDragEnd}
       />
     );
-    const className = classNames({
-      'react-grid-HeaderCell': true,
-      'react-grid-HeaderCell--resizing': this.state.resizing,
-      'react-grid-HeaderCell--frozen': isFrozen(column)
-    }, this.props.className, column.cellClass);
+    const className = classNames(
+      'react-grid-HeaderCell',
+      this.state.resizing && 'react-grid-HeaderCell--resizing',
+      isFrozen(column) && 'react-grid-HeaderCell--frozen',
+      this.props.className,
+      column.cellClass
+    );
     const cell = (
       <div ref={this.headerCellRef} className={className} style={this.getStyle()}>
         {this.getCell()}

@@ -167,11 +167,10 @@ class HeaderRow extends React.Component {
       overflowY: 'hidden'
     };
 
-    const cells = this.getCells();
     return (
       <div {...this.getKnownDivProps()} className="react-grid-HeaderRow">
         <div style={cellsStyle}>
-          {cells}
+          {this.getCells()}
         </div>
       </div>
     );

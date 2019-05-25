@@ -3,15 +3,17 @@ import PropTypes from 'prop-types';
 import joinClasses from 'classnames';
 import { isFunction } from 'common/utils';
 import SimpleCellFormatter from './formatters/SimpleCellFormatter';
-import createObjectWithProperties from './createObjectWithProperties';
 import CellAction from './CellAction';
 import CellExpand from './CellExpander';
 import ChildRowDeleteButton from './ChildRowDeleteButton';
 import { isFrozen } from './ColumnUtils';
 require('../../../themes/react-data-grid-cell.css');
 
-// The list of the propTypes that we want to include in the Cell div
-const knownDivPropertyKeys = ['height', 'value'];
+const defaultCellContentStyle = {
+  position: 'relative',
+  top: '50%',
+  transform: 'translateY(-50%)'
+};
 
 class Cell extends React.PureComponent {
   static propTypes = {
@@ -169,13 +171,13 @@ class Cell extends React.PureComponent {
       isFrozen(this.props.column) ? 'react-grid-Cell--frozen' : null,
       lastFrozenColumnIndex === idx ? 'rdg-last--frozen' : null
     );
-    const extraClasses = joinClasses({
-      'row-selected': this.props.isRowSelected,
-      editing: this.isEditorEnabled(),
-      'has-tooltip': this.props.tooltip ? true : false,
-      'rdg-child-cell': this.props.expandableOptions && this.props.expandableOptions.subRowDetails && this.props.expandableOptions.treeDepth > 0,
-      'last-column': this.props.column.isLastColumn
-    });
+    const extraClasses = joinClasses(
+      this.props.isRowSelected && 'row-selected',
+      this.isEditorEnabled() && 'editing',
+      this.props.tooltip ? 'has-tooltip' : null,
+      this.props.expandableOptions && this.props.expandableOptions.subRowDetails && this.props.expandableOptions.treeDepth > 0 ? 'rdg-child-cell' : null,
+      this.props.column.isLastColumn && 'last-column'
+    );
     return joinClasses(className, extraClasses);
   };
 
@@ -271,10 +273,6 @@ class Cell extends React.PureComponent {
     return this.createEventDTO(gridEvents, columnEvents, onColumnEvent);
   };
 
-  getKnownDivProps = () => {
-    return createObjectWithProperties(this.props, knownDivPropertyKeys);
-  };
-
   getCellActions() {
     const { cellMetaData, column, rowData } = this.props;
     if (cellMetaData && cellMetaData.getCellActions) {
@@ -308,6 +306,11 @@ class Cell extends React.PureComponent {
     const treeDepth = this.props.expandableOptions ? this.props.expandableOptions.treeDepth : 0;
     const marginLeft = this.props.expandableOptions && isExpandCell ? (this.props.expandableOptions.treeDepth * 30) : 0;
 
+    const cellContentStyle = marginLeft ? {
+      marginLeft,
+      ...defaultCellContentStyle
+    } : defaultCellContentStyle;
+
     let cellDeleter;
 
     const isDeleteSubRowEnabled = this.props.cellMetaData.onDeleteSubRow ? true : false;
@@ -317,14 +320,12 @@ class Cell extends React.PureComponent {
     }
 
     const tooltip = this.props.tooltip && (<span className="cell-tooltip-text">{this.props.tooltip}</span>);
-    const classes = joinClasses('react-grid-Cell__value',
-      { 'cell-tooltip': this.props.tooltip ? true : false }
-    );
+    const classes = joinClasses('react-grid-Cell__value', this.props.tooltip ? 'cell-tooltip' : null);
 
     return (
       <div className={classes}>
         {cellDeleter}
-        <div style={{ marginLeft, position: 'relative', top: '50%', transform: 'translateY(-50%)' }}>
+        <div style={cellContentStyle}>
           <span>{CellContent}</span>
           {this.props.cellControls}
         </div>
@@ -360,7 +361,6 @@ class Cell extends React.PureComponent {
 
     return (
       <div
-        {...this.getKnownDivProps()}
         className={className}
         style={style}
         {...events}

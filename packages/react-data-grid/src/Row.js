@@ -1,14 +1,10 @@
-import rowComparer from 'common/utils/RowComparer';
 import React from 'react';
 import PropTypes from 'prop-types';
 import joinClasses from 'classnames';
 import Cell from './Cell';
-import createObjectWithProperties from './createObjectWithProperties';
 import { isFrozen } from './ColumnUtils';
 require('../../../themes/react-data-grid-row.css');
 
-// The list of the propTypes that we want to include in the Row div
-const knownDivPropertyKeys = ['height'];
 const DEFAULT_EXPANDABLE_OPTIONS = {};
 
 class Row extends React.Component {
@@ -60,10 +56,6 @@ class Row extends React.Component {
     isSelected: false,
     height: 35
   };
-
-  shouldComponentUpdate(nextProps) {
-    return rowComparer(nextProps, this.props);
-  }
 
   handleDragEnter = (e) => {
     // Prevent default to allow drop
@@ -164,19 +156,13 @@ class Row extends React.Component {
     this.row = el;
   };
 
-  getKnownDivProps = () => {
-    return createObjectWithProperties(this.props, knownDivPropertyKeys);
-  };
-
   render() {
     const className = joinClasses(
       'react-grid-Row',
       `react-grid-Row--${this.props.idx % 2 === 0 ? 'even' : 'odd'}`,
-      {
-        'row-selected': this.props.isSelected
-      },
+      this.props.isSelected && 'row-selected',
       this.props.extraClasses,
-      { 'rdg-scrolling': this.props.isScrolling }
+      this.props.isScrolling && 'rdg-scrolling'
     );
 
     const style = {
@@ -184,10 +170,8 @@ class Row extends React.Component {
       overflow: 'hidden'
     };
 
-    const cells = this.getCells();
     return (
       <div
-        {...this.getKnownDivProps()}
         ref={this.setRowRef}
         className={className}
         style={style}
