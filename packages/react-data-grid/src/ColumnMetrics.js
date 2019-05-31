@@ -1,6 +1,6 @@
 import shallowCloneObject from './shallowCloneObject';
 import sameColumn from './ColumnComparer';
-import { getColumn, isFrozen, spliceColumn } from './ColumnUtils';
+import { isFrozen } from './ColumnUtils';
 import getScrollbarSize from './getScrollbarSize';
 import { isColumnsImmutable } from 'common/utils';
 
@@ -86,14 +86,14 @@ function recalculate(metrics) {
  * @param {number} width
  */
 function resizeColumn(metrics, index, width) {
-  const column = getColumn(metrics.columns, index);
-  let metricsClone = shallowCloneObject(metrics);
+  const column = metrics.columns[index];
+  const metricsClone = shallowCloneObject(metrics);
   metricsClone.columns = metrics.columns.slice(0);
 
   const updatedColumn = shallowCloneObject(column);
   updatedColumn.width = Math.max(width, metricsClone.minColumnWidth);
 
-  metricsClone = spliceColumn(metricsClone, index, updatedColumn);
+  metricsClone.columns.splice(index, 1, updatedColumn);
 
   return recalculate(metricsClone);
 }

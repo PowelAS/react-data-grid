@@ -327,7 +327,7 @@ class ReactDataGrid extends React.Component {
 
   getColumn = (idx) => {
     const { columns } = this.state.columnMetrics;
-    return getColumn(columns, idx);
+    return columns[idx];
   };
 
   getSize = () => {

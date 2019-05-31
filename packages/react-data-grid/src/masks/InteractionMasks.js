@@ -21,7 +21,7 @@ import {
   selectedRangeIsSingleCell
 } from '../utils/SelectedCellUtils';
 import { isFunction } from 'common/utils';
-import { getColumn, isFrozen } from '../ColumnUtils';
+import { isFrozen } from '../ColumnUtils';
 import * as keyCodes from '../KeyCodes';
 import { CellNavigationMode, EventTypes } from 'common/constants';
 
@@ -166,7 +166,7 @@ class InteractionMasks extends React.Component {
       const { idx, rowIdx } = position;
       if (idx >= 0 && rowIdx >= 0) {
         const { columns, getRowTop } = this.props;
-        const column = getColumn(columns, idx);
+        const column = columns[idx];
         const frozen = isFrozen(column);
         if (frozen) {
           const top = getRowTop(rowIdx);

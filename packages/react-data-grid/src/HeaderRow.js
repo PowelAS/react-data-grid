@@ -2,7 +2,7 @@ import React from 'react';
 import shallowEqual from 'shallowequal';
 import BaseHeaderCell from './HeaderCell';
 import getScrollbarSize from './getScrollbarSize';
-import { getColumn, isFrozen } from './ColumnUtils';
+import { isFrozen } from './ColumnUtils';
 import SortableHeaderCell from 'common/cells/headerCells/SortableHeaderCell';
 import FilterableHeaderCell from 'common/cells/headerCells/FilterableHeaderCell';
 import HeaderCellType from './HeaderCellType';
@@ -113,7 +113,7 @@ class HeaderRow extends React.Component {
     const { columns, rowType } = this.props;
 
     for (let i = 0, len = columns.length; i < len; i++) {
-      const column = { rowType, ...getColumn(columns, i) };
+      const column = { rowType, ...columns[i] };
       const _renderer = column.key === 'select-row' && rowType === HeaderRowType.FILTER ? <div></div> : this.getHeaderRenderer(column);
 
       const cell = (
