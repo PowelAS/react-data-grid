@@ -80,6 +80,7 @@ class Grid extends React.Component {
   };
 
   _scrollLeft = undefined;
+  _totalNumberColumns = this.props.columns.length;
 
   getStyle = () => {
     return {
@@ -100,18 +101,24 @@ class Grid extends React.Component {
   };
 
   areFrozenColumnsScrolledLeft(scrollLeft) {
-    return scrollLeft > 0 && this.props.columns.some(c => isFrozen(c));
+    return scrollLeft > 0 && this.props.columns.some(isFrozen);
   }
 
   onScroll = (scrollState) => {
-    const { scrollLeft } = scrollState;
+    const { scrollLeft, totalNumberColumns } = scrollState;
     const scrollLeftChanged = this._scrollLeft !== scrollLeft;
+    const totalNumberColumnsChanged = this._totalNumberColumns !== totalNumberColumns;
+
     if (scrollLeftChanged || this.areFrozenColumnsScrolledLeft(scrollLeft)) {
       this._scrollLeft = scrollLeft;
       this._onScroll();
     }
 
-    if (scrollLeftChanged) {
+    if (totalNumberColumnsChanged) {
+      this._totalNumberColumns = totalNumberColumns;
+    }
+
+    if (scrollLeftChanged || totalNumberColumnsChanged) {
       this.props.onScroll(scrollState);
     }
   };

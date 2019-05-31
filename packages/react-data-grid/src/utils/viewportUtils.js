@@ -1,4 +1,4 @@
-import { getSize, getColumn, isFrozen } from '../ColumnUtils';
+import { getColumn, isFrozen } from '../ColumnUtils';
 
 export const OVERSCAN_ROWS = 2;
 
@@ -15,7 +15,7 @@ const max = Math.max;
 const ceil = Math.ceil;
 
 export const getGridState = (props) => {
-  const totalNumberColumns = getSize(props.columnMetrics.columns);
+  const totalNumberColumns = props.columnMetrics.columns.length;
   const canvasHeight = props.minHeight - props.rowOffsetHeight;
   const renderedRowsCount = ceil((props.minHeight - props.rowHeight) / props.rowHeight);
   const rowOverscanEndIdx = min(props.rowsCount, renderedRowsCount * 2);
@@ -32,7 +32,8 @@ export const getGridState = (props) => {
     colOverscanStartIdx: 0,
     colOverscanEndIdx: totalNumberColumns,
     isScrolling: false,
-    lastFrozenColumnIndex: 0
+    lastFrozenColumnIndex: 0,
+    totalNumberColumns
   };
 };
 
@@ -70,7 +71,7 @@ export const getNonFrozenVisibleColStartIdx = (columns, scrollLeft) => {
   const lastFrozenColumnIndex = findLastFrozenColumnIndex(columns);
   const nonFrozenColumns = columns.slice(lastFrozenColumnIndex + 1);
   let columnIndex = lastFrozenColumnIndex;
-  while (remainingScroll >= 0 && columnIndex < getSize(nonFrozenColumns)) {
+  while (remainingScroll >= 0 && columnIndex < nonFrozenColumns.length) {
     columnIndex++;
     const column = getColumn(columns, columnIndex);
     remainingScroll -= column ? column.width : 0;
@@ -80,7 +81,7 @@ export const getNonFrozenVisibleColStartIdx = (columns, scrollLeft) => {
 
 export const getNonFrozenRenderedColumnCount = (columnMetrics, viewportDomWidth, scrollLeft) => {
   const { columns } = columnMetrics;
-  if (getSize(columns) === 0) {
+  if (columns.length === 0) {
     return 0;
   }
   const colVisibleStartIdx = getNonFrozenVisibleColStartIdx(columnMetrics.columns, scrollLeft);

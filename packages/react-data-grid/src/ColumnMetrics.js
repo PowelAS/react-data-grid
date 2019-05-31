@@ -1,6 +1,6 @@
 import shallowCloneObject from './shallowCloneObject';
 import sameColumn from './ColumnComparer';
-import { getSize, getColumn, isFrozen, spliceColumn } from './ColumnUtils';
+import { getColumn, isFrozen, spliceColumn } from './ColumnUtils';
 import getScrollbarSize from './getScrollbarSize';
 import { isColumnsImmutable } from 'common/utils';
 
@@ -24,7 +24,7 @@ function setDefferedColumnWidths(columns, unallocatedWidth, minColumnWidth) {
       if (unallocatedWidth <= 0) {
         column.width = minColumnWidth;
       } else {
-        const columnWidth = Math.floor(unallocatedWidth / (getSize(defferedColumns)));
+        const columnWidth = Math.floor(unallocatedWidth / defferedColumns.length);
         if (columnWidth < minColumnWidth) {
           column.width = minColumnWidth;
         } else {
@@ -110,16 +110,16 @@ function compareEachColumn(prevColumns, nextColumns, isSameColumn) {
   const nextColumnsByKey = {};
 
 
-  if (getSize(prevColumns) !== getSize(nextColumns)) {
+  if (prevColumns.length !== nextColumns.length) {
     return false;
   }
 
-  for (i = 0, len = getSize(prevColumns); i < len; i++) {
+  for (i = 0, len = prevColumns.length; i < len; i++) {
     column = prevColumns[i];
     prevColumnsByKey[column.key] = column;
   }
 
-  for (i = 0, len = getSize(nextColumns); i < len; i++) {
+  for (i = 0, len = nextColumns.length; i < len; i++) {
     column = nextColumns[i];
     nextColumnsByKey[column.key] = column;
     const prevColumn = prevColumnsByKey[column.key];
@@ -128,7 +128,7 @@ function compareEachColumn(prevColumns, nextColumns, isSameColumn) {
     }
   }
 
-  for (i = 0, len = getSize(prevColumns); i < len; i++) {
+  for (i = 0, len = prevColumns.length; i < len; i++) {
     column = prevColumns[i];
     const nextColumn = nextColumnsByKey[column.key];
     if (nextColumn === undefined) {

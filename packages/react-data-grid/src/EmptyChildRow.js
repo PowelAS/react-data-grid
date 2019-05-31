@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { getSize, getColumn, getValue } from './ColumnUtils';
+import { getColumn, getValue } from './ColumnUtils';
 
 class EmptyChildRow extends React.Component {
   onAddSubRow = () => {
@@ -9,7 +9,7 @@ class EmptyChildRow extends React.Component {
 
   getFrozenColumnsWidth() {
     let fixedWidth = 0;
-    const size = getSize(this.props.columns);
+    const size = this.props.columns.length;
     for (let i = 0; i < size; i++) {
       const column = getColumn(this.props.columns, i);
       if (column) {

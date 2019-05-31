@@ -15,14 +15,6 @@ export function spliceColumn(metrics, idx, column) {
   return metrics;
 }
 
-export function getSize(columns) {
-  if (Array.isArray(columns)) {
-    return columns.length;
-  } else if (typeof Immutable !== 'undefined') {
-    return columns.size;
-  }
-}
-
 // Logic extented to allow for functions to be passed down in column.editable
 // this allows us to deicde whether we can be edting from a cell level
 export function canEdit(col, rowData, enableCellSelect) {
