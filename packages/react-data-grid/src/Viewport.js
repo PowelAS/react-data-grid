@@ -124,7 +124,7 @@ class Viewport extends React.Component {
     const totalNumberColumns = columns.length;
     const lastFrozenColumnIndex = findLastFrozenColumnIndex(columns);
     const nonFrozenColVisibleStartIdx = getNonFrozenVisibleColStartIdx(columns, scrollLeft);
-    const nonFrozenRenderedColumnCount = getNonFrozenRenderedColumnCount(this.props.columnMetrics, this.getDOMNodeOffsetWidth(), scrollLeft);
+    const nonFrozenRenderedColumnCount = getNonFrozenRenderedColumnCount(columnMetrics, this.getDOMNodeOffsetWidth(), scrollLeft);
     const colVisibleEndIdx = Math.min(nonFrozenColVisibleStartIdx + nonFrozenRenderedColumnCount, totalNumberColumns);
     const colOverscanStartIdx = getColOverscanStartIdx(scrollDirection, nonFrozenColVisibleStartIdx, lastFrozenColumnIndex);
     const colOverscanEndIdx = getColOverscanEndIdx(scrollDirection, colVisibleEndIdx, totalNumberColumns);

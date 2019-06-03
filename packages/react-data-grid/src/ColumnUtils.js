@@ -28,6 +28,6 @@ export function getValue(column, property) {
 }
 
 export function isFrozen(column) {
-  return column.locked === true || column.frozen === true;
+  return column.frozen === true || column.locked === true;
 }
 
