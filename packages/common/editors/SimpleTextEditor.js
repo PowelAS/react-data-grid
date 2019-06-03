@@ -1,8 +1,16 @@
-const React                   = require('react');
-const EditorBase              = require('./EditorBase');
+const React = require('react');
 
+class SimpleTextEditor extends React.Component {
+  getInputNode() {
+    return this.input;
+  }
 
-class SimpleTextEditor extends EditorBase {
+  getValue() {
+    return {
+      [this.props.column.key]: this.input.value
+    };
+  }
+
   setInputRef = (input) => {
     this.input = input;
   };
