@@ -16,10 +16,6 @@ import { EventBus } from './masks';
 require('../../../themes/react-data-grid-core.css');
 require('../../../themes/react-data-grid-checkbox.css');
 
-if (!Object.assign) {
-  Object.assign = require('object-assign');
-}
-
 const deprecationWarning = (propName, alternative) => `${propName} has been deprecated and will be removed in a future version. Please use ${alternative} instead`;
 
 /** Main API Component to render a data grid of rows and columns
@@ -314,17 +310,6 @@ class ReactDataGrid extends React.Component {
     return totalWidth;
   };
 
-  getColumnMetricsType = (metrics) => {
-    const totalWidth = metrics.totalWidth || this.getTotalWidth();
-    const currentMetrics = {
-      columns: metrics.columns,
-      totalWidth: totalWidth,
-      minColumnWidth: metrics.minColumnWidth
-    };
-    const updatedMetrics = ColumnMetrics.recalculate(currentMetrics);
-    return updatedMetrics;
-  };
-
   getColumn = (idx) => {
     const { columns } = this.state.columnMetrics;
     return columns[idx];
@@ -342,11 +327,14 @@ class ReactDataGrid extends React.Component {
 
   createColumnMetrics = (props = this.props) => {
     const gridColumns = this.setupGridColumns(props);
-    return this.getColumnMetricsType({
+
+    const metrics = {
       columns: gridColumns,
       minColumnWidth: this.props.minColumnWidth,
-      totalWidth: props.minWidth
-    });
+      totalWidth: this.props.minWidth || this.getTotalWidth()
+    };
+
+    return ColumnMetrics.recalculate(metrics);
   };
 
   onColumnResize = (index, width) => {
@@ -670,7 +658,7 @@ class ReactDataGrid extends React.Component {
     } else {
       const selectedRows = [];
       for (let i = 0; i < this.props.rowsCount; i++) {
-        const row = Object.assign({}, this.props.rowGetter(i), { isSelected: allRowsSelected });
+        const row = { ...this.props.rowGetter(i), isSelected: allRowsSelected };
         selectedRows.push(row);
       }
       this.setState({ selectedRows: selectedRows });
@@ -743,12 +731,9 @@ class ReactDataGrid extends React.Component {
 
     this._cachedColumns = columns;
 
-    let cols = columns.slice(0);
-    let unshiftedCols = {};
     if (this.props.rowActionsCell || (props.enableRowSelect && !this.props.rowSelection) || (props.rowSelection && props.rowSelection.showCheckbox !== false)) {
       const SelectAllComponent = this.props.selectAllRenderer || SelectAll;
-      const SelectAllRenderer = <SelectAllComponent onChange={this.handleCheckboxChange} inputRef={grid => this.selectAllCheckbox = grid} />;
-      const headerRenderer = props.enableRowSelect === 'single' ? null : SelectAllRenderer;
+      const headerRenderer = props.enableRowSelect === 'single' ? null : <SelectAllComponent onChange={this.handleCheckboxChange} inputRef={this.setSelectAllCheckboxRef} />;
       const Formatter = this.props.rowActionsCell ? this.props.rowActionsCell : CheckboxEditor;
       const selectColumn = {
         key: 'select-row',
@@ -762,12 +747,17 @@ class ReactDataGrid extends React.Component {
         getRowMetaData: (rowData) => rowData,
         cellClass: this.props.rowActionsCell ? 'rdg-row-actions-cell' : ''
       };
-      unshiftedCols = cols.unshift(selectColumn);
-      cols = unshiftedCols > 0 ? cols : unshiftedCols;
+
+      this._cachedComputedColumns = [selectColumn, ...columns];
+    } else {
+      this._cachedComputedColumns = columns.slice(0);
     }
-    this._cachedComputedColumns = cols;
 
     return this._cachedComputedColumns;
+  };
+
+  setSelectAllCheckboxRef = (selectAllCheckbox) => {
+    this.selectAllCheckbox = selectAllCheckbox;
   };
 
   setGridRef = (grid) => {
@@ -776,16 +766,6 @@ class ReactDataGrid extends React.Component {
 
   setBaseGridRef = (base) => {
     this.base = base;
-  };
-
-  renderToolbar = () => {
-    const Toolbar = this.props.toolbar;
-    const toolBarProps = { columns: this.props.columns, onToggleFilter: this.onToggleFilter, numberOfRows: this.props.rowsCount };
-    if (React.isValidElement(Toolbar)) {
-      return (React.cloneElement(Toolbar, toolBarProps));
-    } else if (isFunction(Toolbar)) {
-      return <Toolbar {...toolBarProps} />;
-    }
   };
 
   render() {
@@ -807,7 +787,6 @@ class ReactDataGrid extends React.Component {
       cellMetaData.onCellMouseEnter = this.onCellMouseEnter;
     }
 
-    const toolbar = this.renderToolbar();
     let containerWidth = this.props.minWidth || this.gridWidth();
     let gridWidth = containerWidth - this.state.scrollOffset;
 
@@ -823,7 +802,6 @@ class ReactDataGrid extends React.Component {
     return (
       <div className="react-grid-Container" style={{ width: containerWidth }}
         ref={this.setGridRef}>
-        {toolbar}
         <div className="react-grid-Main">
           <BaseGrid
             ref={this.setBaseGridRef}

@@ -235,7 +235,7 @@ class Cell extends React.PureComponent {
   };
 
   createEventDTO = (gridEvents, columnEvents, onColumnEvent) => {
-    const allEvents = Object.assign({}, gridEvents);
+    const allEvents = { ...gridEvents };
 
     for (const eventKey in columnEvents) {
       if (columnEvents.hasOwnProperty(eventKey)) {

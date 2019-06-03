@@ -170,8 +170,12 @@ class Viewport extends React.Component {
   };
 
   metricsUpdated = () => {
-    const height = this.viewportHeight();
-    const width = this.viewportWidth();
+    if (!this.viewport) {
+      return;
+    }
+
+    const { height } = this.viewport.getBoundingClientRect();
+
     if (height) {
       const { scrollTop, scrollLeft } = this.state;
       const { rowHeight, rowsCount } = this.props;
@@ -180,18 +184,9 @@ class Viewport extends React.Component {
         scrollLeft,
         height,
         rowHeight,
-        rowsCount,
-        width
+        rowsCount
       });
     }
-  };
-
-  viewportHeight = () => {
-    return this.viewport ? this.viewport.offsetHeight : 0;
-  };
-
-  viewportWidth = () => {
-    return this.viewport ? this.viewport.offsetWidth : 0;
   };
 
   componentWillReceiveProps(nextProps) {
