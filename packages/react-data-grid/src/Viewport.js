@@ -42,7 +42,6 @@ class Viewport extends React.Component {
     rowRenderer: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
     rowsCount: PropTypes.number.isRequired,
     rowHeight: PropTypes.number.isRequired,
-    onRows: PropTypes.func,
     onScroll: PropTypes.func,
     minHeight: PropTypes.number,
     cellMetaData: PropTypes.shape(cellMetaDataShape),
@@ -302,7 +301,6 @@ class Viewport extends React.Component {
           height={this.state.height}
           rowHeight={this.props.rowHeight}
           onScroll={this.onScroll}
-          onRows={this.props.onRows}
           scrollToRowIndex={this.props.scrollToRowIndex}
           contextMenu={this.props.contextMenu}
           rowSelection={this.props.rowSelection}

@@ -37,7 +37,6 @@ class Canvas extends React.PureComponent {
       PropTypes.array.isRequired
     ]),
     expandedRows: PropTypes.array,
-    onRows: PropTypes.func,
     onScroll: PropTypes.func,
     columns: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
     cellMetaData: PropTypes.shape(cellMetaDataShape).isRequired,
@@ -81,7 +80,6 @@ class Canvas extends React.PureComponent {
   };
 
   static defaultProps = {
-    onRows: () => { },
     selectedRows: [],
     scrollToRowIndex: 0,
     RowsContainer: DefaultRowsContainer
@@ -92,16 +90,13 @@ class Canvas extends React.PureComponent {
   };
 
   rows = [];
-  _currentRowsRange = { start: 0, end: 0 };
   _scroll = { scrollTop: 0, scrollLeft: 0 };
 
   componentDidMount() {
     this.unsubscribeScrollToColumn = this.props.eventBus.subscribe(EventTypes.SCROLL_TO_COLUMN, this.scrollToColumn);
-    this.onRows();
   }
 
   componentWillUnmount() {
-    this._currentRowsRange = { start: 0, end: 0 };
     this._scroll = { scrollTop: 0, scrollLeft: 0 };
     this.rows = [];
     this.unsubscribeScrollToColumn();
@@ -112,15 +107,7 @@ class Canvas extends React.PureComponent {
     if (prevProps.scrollToRowIndex !== scrollToRowIndex && scrollToRowIndex !== 0) {
       this.scrollToRow(scrollToRowIndex);
     }
-    this.onRows();
   }
-
-  onRows = () => {
-    if (this._currentRowsRange !== { start: 0, end: 0 }) {
-      this.props.onRows(this._currentRowsRange);
-      this._currentRowsRange = { start: 0, end: 0 };
-    }
-  };
 
   scrollToRow = (scrollToRowIndex) => {
     const { rowHeight, rowsCount, height } = this.props;
@@ -176,7 +163,6 @@ class Canvas extends React.PureComponent {
   }
 
   getRows = (rowOverscanStartIdx, rowOverscanEndIdx) => {
-    this._currentRowsRange = { start: rowOverscanStartIdx, end: rowOverscanEndIdx };
     if (Array.isArray(this.props.rowGetter)) {
       return this.props.rowGetter.slice(rowOverscanStartIdx, rowOverscanEndIdx);
     }

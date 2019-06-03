@@ -36,7 +36,6 @@ class Grid extends React.Component {
       })
     ]),
     rowsCount: PropTypes.number,
-    onRows: PropTypes.func,
     sortColumn: PropTypes.string,
     cellMetaData: PropTypes.shape(cellMetaDataShape).isRequired,
     sortDirection: PropTypes.oneOf(['ASC', 'DESC', 'NONE']),
@@ -193,7 +192,6 @@ class Grid extends React.Component {
                   columnMetrics={this.props.columnMetrics}
                   totalWidth={this.props.totalWidth}
                   onScroll={this.onScroll}
-                  onRows={this.props.onRows}
                   cellMetaData={this.props.cellMetaData}
                   rowOffsetHeight={this.props.rowOffsetHeight || this.props.rowHeight * headerRows.length}
                   minHeight={this.props.minHeight}
