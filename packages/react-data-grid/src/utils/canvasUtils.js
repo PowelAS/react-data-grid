@@ -23,9 +23,9 @@ function getColumnScrollPosition(columns, idx, currentScrollLeft, currentClientW
 
     if (scrollLeft < 0) {
       return scrollLeft;
-    } else if (scrollRight > currentClientWidth) {
-      const scrollAmount = scrollRight - currentClientWidth;
-      return scrollAmount;
+    }
+    if (scrollRight > currentClientWidth) {
+      return scrollRight - currentClientWidth;
     }
   }
 }

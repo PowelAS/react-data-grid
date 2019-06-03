@@ -104,7 +104,7 @@ class Canvas extends React.PureComponent {
 
   componentDidUpdate(prevProps) {
     const { scrollToRowIndex } = this.props;
-    if (prevProps.scrollToRowIndex !== scrollToRowIndex && scrollToRowIndex !== 0) {
+    if (scrollToRowIndex && prevProps.scrollToRowIndex !== scrollToRowIndex) {
       this.scrollToRow(scrollToRowIndex);
     }
   }
@@ -119,13 +119,9 @@ class Canvas extends React.PureComponent {
   };
 
   onScroll = (e) => {
-    if (this.canvas !== e.target) {
-      return;
-    }
-    const { scrollLeft, scrollTop } = e.target;
-    const scroll = { scrollTop, scrollLeft };
-    this._scroll = scroll;
-    this.props.onScroll(scroll);
+    const { scrollLeft, scrollTop } = e.currentTarget;
+    this._scroll = { scrollTop, scrollLeft };
+    this.props.onScroll(this._scroll);
   };
 
   getClientScrollTopOffset = (node) => {
@@ -147,7 +143,7 @@ class Canvas extends React.PureComponent {
   }
 
   scrollToColumn = (idx) => {
-    if (this.canvas) return;
+    if (!this.canvas) return;
 
     const { scrollLeft, clientWidth } = this.canvas;
     const newScrollLeft = getColumnScrollPosition(this.props.columns, idx, scrollLeft, clientWidth);
