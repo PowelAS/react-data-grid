@@ -6,14 +6,9 @@ import ColumnMetrics from './ColumnMetrics';
 import HeaderRow from './HeaderRow';
 import getScrollbarSize  from './getScrollbarSize';
 import PropTypes from 'prop-types';
-import createObjectWithProperties from'./createObjectWithProperties';
-import cellMetaDataShape    from'common/prop-shapes/CellMetaDataShape';
+import cellMetaDataShape from 'common/prop-shapes/CellMetaDataShape';
 import { HeaderRowType } from 'common/constants';
 require('../../../themes/react-data-grid-header.css');
-
-
-// The list of the propTypes that we want to include in the Header div
-const knownDivPropertyKeys = ['height', 'onScroll'];
 
 class Header extends React.Component {
   static propTypes = {
@@ -182,24 +177,21 @@ class Header extends React.Component {
     }
   };
 
-  getKnownDivProps = () => {
-    return createObjectWithProperties(this.props, knownDivPropertyKeys);
-  };
-
   // Set the cell selection to -1 x -1 when clicking on the header
   onHeaderClick = () => {
     this.props.cellMetaData.onCellClick({ rowIdx: -1, idx: -1 });
   };
 
   render() {
-    const className = joinClasses({
-      'react-grid-Header': true,
-      'react-grid-Header--resizing': !!this.state.resizing
-    });
+    const className = joinClasses(
+      'react-grid-Header',
+      !!this.state.resizing && 'react-grid-Header--resizing'
+    );
     const headerRows = this.getHeaderRows();
+    const { height, onScroll } = this.props;
 
     return (
-      <div {...this.getKnownDivProps()} style={this.getStyle()} className={className} onClick={this.onHeaderClick}>
+      <div height={height} onScroll={onScroll} style={this.getStyle()} className={className} onClick={this.onHeaderClick}>
         {headerRows}
       </div>
     );
