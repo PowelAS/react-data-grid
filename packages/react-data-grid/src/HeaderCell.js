@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import Column from 'common/prop-shapes/Column';
@@ -89,7 +88,7 @@ class HeaderCell extends React.Component {
   };
 
   setScrollLeft = (scrollLeft) => {
-    const node = ReactDOM.findDOMNode(this);
+    const node = this.headerCell;
     if (node) {
       node.style.webkitTransform = `translate3d(${scrollLeft}px, 0px, 0px)`;
       node.style.transform = `translate3d(${scrollLeft}px, 0px, 0px)`;
@@ -97,7 +96,7 @@ class HeaderCell extends React.Component {
   };
 
   removeScroll = () => {
-    const node = ReactDOM.findDOMNode(this);
+    const node = this.headerCell;
     if (node) {
       const transform = 'none';
       node.style.webkitTransform = transform;

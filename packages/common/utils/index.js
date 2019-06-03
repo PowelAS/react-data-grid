@@ -1,9 +1,5 @@
 const isImmutableLoaded = () => typeof Immutable !== 'undefined';
 
-export const isColumnsImmutable = (columns) => {
-  return isImmutableLoaded() && columns instanceof Immutable.List;
-};
-
 export const isEmptyArray = (obj) => {
   return Array.isArray(obj) && obj.length === 0;
 };

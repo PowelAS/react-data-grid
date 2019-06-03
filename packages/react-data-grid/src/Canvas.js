@@ -89,7 +89,7 @@ class Canvas extends React.PureComponent {
     scrollingTimeout: null
   };
 
-  rows = [];
+  rows = new Map();
   _scroll = { scrollTop: 0, scrollLeft: 0 };
 
   componentDidMount() {
@@ -98,7 +98,7 @@ class Canvas extends React.PureComponent {
 
   componentWillUnmount() {
     this._scroll = { scrollTop: 0, scrollLeft: 0 };
-    this.rows = [];
+    this.rows.clear();
     this.unsubscribeScrollToColumn();
   }
 
@@ -110,6 +110,7 @@ class Canvas extends React.PureComponent {
   }
 
   scrollToRow = (scrollToRowIndex) => {
+    if (!this.canvas) return;
     const { rowHeight, rowsCount, height } = this.props;
     this.canvas.scrollTop = Math.min(
       scrollToRowIndex * rowHeight,
@@ -146,6 +147,8 @@ class Canvas extends React.PureComponent {
   }
 
   scrollToColumn = (idx) => {
+    if (this.canvas) return;
+
     const { scrollLeft, clientWidth } = this.canvas;
     const newScrollLeft = getColumnScrollPosition(this.props.columns, idx, scrollLeft, clientWidth);
 
@@ -163,14 +166,11 @@ class Canvas extends React.PureComponent {
   }
 
   getRows = (rowOverscanStartIdx, rowOverscanEndIdx) => {
-    if (Array.isArray(this.props.rowGetter)) {
-      return this.props.rowGetter.slice(rowOverscanStartIdx, rowOverscanEndIdx);
-    }
     const rows = [];
     let i = rowOverscanStartIdx;
     while (i < rowOverscanEndIdx) {
       const row = this.props.rowGetter(i);
-      let subRowDetails = {};
+      let subRowDetails;
       if (this.props.getSubRowDetails) {
         subRowDetails = this.props.getSubRowDetails(row);
       }
@@ -188,11 +188,12 @@ class Canvas extends React.PureComponent {
   isRowSelected = (idx, row) => {
     // Use selectedRows if set
     if (this.props.selectedRows !== null) {
-      const selectedRows = this.props.selectedRows.filter(r => {
-        const rowKeyValue = row.get ? row.get(this.props.rowKey) : row[this.props.rowKey];
+      const selectedRow = this.props.selectedRows.find(r => {
+        const rowKeyValue = typeof row.get === 'function' ? row.get(this.props.rowKey) : row[this.props.rowKey];
         return r[this.props.rowKey] === rowKeyValue;
       });
-      return selectedRows.length > 0 && selectedRows[0].isSelected;
+
+      return Boolean(selectedRow && selectedRow.isSelected);
     }
 
     // Else use new rowSelection props
@@ -221,16 +222,18 @@ class Canvas extends React.PureComponent {
 
   getRowByRef = (i) => {
     // check if wrapped with React DND drop target
-    const wrappedRow = this.rows[i] && this.rows[i].getDecoratedComponentInstance ? this.rows[i].getDecoratedComponentInstance(i) : null;
-    if (wrappedRow) {
-      return wrappedRow.row;
-    }
-    return this.rows[i];
+    if (!this.rows.has(i)) return;
+
+    const row = this.rows.get(i);
+
+    const wrappedRow = row.getDecoratedComponentInstance ? row.getDecoratedComponentInstance(i) : null;
+
+    return wrappedRow ? wrappedRow.row : row;
   };
 
   getRowTop = (rowIdx) => {
     const row = this.getRowByRef(rowIdx);
-    if (row && isFunction(row.getRowTop)) {
+    if (row && row.getRowTop) {
       return row.getRowTop();
     }
     return this.props.rowHeight * rowIdx;
@@ -238,7 +241,7 @@ class Canvas extends React.PureComponent {
 
   getRowHeight = (rowIdx) => {
     const row = this.getRowByRef(rowIdx);
-    if (row && isFunction(row.getRowHeight)) {
+    if (row && row.getRowHeight) {
       return row.getRowHeight();
     }
     return this.props.rowHeight;
@@ -251,10 +254,6 @@ class Canvas extends React.PureComponent {
 
   setCanvasRef = el => {
     this.canvas = el;
-  };
-
-  setRowRef = idx => row => {
-    this.rows[idx] = row;
   };
 
   setInteractionMasksRef = el => {
@@ -314,7 +313,7 @@ class Canvas extends React.PureComponent {
       <div key={key} style={{ height }}>
         {
           this.props.columns.map(
-            (column, idx) => <div style={{ width: column.width }} key={idx} />
+            (column, idx) => <div style={{ width: column.width }} key={column.key} />
           )
         }
       </div >
@@ -330,7 +329,13 @@ class Canvas extends React.PureComponent {
         const key = `row-${rowIdx}`;
         return r.row && this.renderRow({
           key,
-          ref: this.setRowRef(rowIdx),
+          ref: (row) => {
+            if (row) {
+              this.rows.set(rowIdx, row);
+            } else {
+              this.rows.delete(rowIdx);
+            }
+          },
           idx: rowIdx,
           rowVisibleStartIdx: this.props.rowVisibleStartIdx,
           rowVisibleEndIdx: this.props.rowVisibleEndIdx,
@@ -338,7 +343,7 @@ class Canvas extends React.PureComponent {
           height: rowHeight,
           onMouseOver: this.onMouseOver,
           columns,
-          isSelected: this.isRowSelected(rowIdx, r.row, rowOverscanStartIdx, rowOverscanEndIdx),
+          isSelected: this.isRowSelected(rowIdx, r.row),
           expandedRows,
           cellMetaData,
           subRowDetails: r.subRowDetails,

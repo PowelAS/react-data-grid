@@ -42,7 +42,7 @@ class HeaderRow extends React.Component {
     onHeaderDrop: PropTypes.func
   };
 
-  cells = [];
+  cells = new Map();
 
   shouldComponentUpdate(nextProps) {
     return (
@@ -110,12 +110,13 @@ class HeaderRow extends React.Component {
 
     for (let i = 0, len = columns.length; i < len; i++) {
       const column = { rowType, ...columns[i] };
-      const _renderer = column.key === 'select-row' && rowType === HeaderRowType.FILTER ? <div></div> : this.getHeaderRenderer(column);
+      const { key } = column;
+      const _renderer = key === 'select-row' && rowType === HeaderRowType.FILTER ? <div /> : this.getHeaderRenderer(column);
 
       const cell = (
         <BaseHeaderCell
-          key={column.key}
-          ref={(node) => this.cells[i] = node}
+          key={key}
+          ref={(node) => node ? this.cells.set(key, node) : this.cells.delete(key)}
           column={column}
           rowType={rowType}
           height={this.props.height}
@@ -139,13 +140,17 @@ class HeaderRow extends React.Component {
   };
 
   setScrollLeft = (scrollLeft) => {
-    this.props.columns.forEach((column, i) => {
+    this.props.columns.forEach((column) => {
+      const { key } = column;
+
+      if (!this.cells.has(key)) return;
+
+      const cell = this.cells.get(key);
+
       if (isFrozen(column)) {
-        this.cells[i].setScrollLeft(scrollLeft);
+        cell.setScrollLeft(scrollLeft);
       } else {
-        if (this.cells[i] && this.cells[i].removeScroll) {
-          this.cells[i].removeScroll();
-        }
+        cell.removeScroll();
       }
     });
   };

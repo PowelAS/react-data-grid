@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import html5DragDropContext from '../shared/html5DragDropContext';
 import DraggableHeaderCell from './DraggableHeaderCell';
 import RowDragLayer from './RowDragLayer';
-import { isColumnsImmutable } from 'common/utils';
 
 class DraggableContainer extends Component {
   getRows(rowsCount, rowGetter) {
@@ -35,7 +34,7 @@ class DraggableContainer extends Component {
         <RowDragLayer
           rowSelection={grid.props.rowSelection}
           rows={rows}
-          columns={isColumnsImmutable(columns) ? columns.toArray() : columns}
+          columns={columns}
         />
       </div>
     );

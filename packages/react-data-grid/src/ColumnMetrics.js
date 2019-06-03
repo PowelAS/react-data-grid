@@ -1,7 +1,6 @@
 import sameColumn from './ColumnComparer';
 import { isFrozen } from './ColumnUtils';
 import getScrollbarSize from './getScrollbarSize';
-import { isColumnsImmutable } from 'common/utils';
 
 function setColumnWidths(columns, totalWidth) {
   return columns.map(column => {
@@ -44,25 +43,21 @@ function setColumnOffsets(columns) {
   });
 }
 
-const getTotalColumnWidth = columns => columns.reduce((acc, c) => acc + c.width, 0);
-
+const getTotalColumnWidth = columns => columns.reduce((acc, c) => acc + (c.width || 0), 0);
 
 function recalculate(metrics) {
   // compute width for columns which specify width
   let columns = setColumnWidths(metrics.columns, metrics.totalWidth);
 
-  let unallocatedWidth = columns.filter(c => c.width).reduce((w, column) => w - column.width, metrics.totalWidth);
-  unallocatedWidth -= getScrollbarSize();
-  const width = columns.filter(c => c.width).reduce((w, column) => {
-    return w + column.width;
-  }, 0);
+  const width = getTotalColumnWidth(columns);
+  const unallocatedWidth = metrics.totalWidth - width - getScrollbarSize();
 
   // compute width for columns which doesn't specify width
   columns = setDefferedColumnWidths(columns, unallocatedWidth, metrics.minColumnWidth);
 
   // compute left offset
   columns = setColumnOffsets(columns);
-  const frozenColumns = columns.filter(c => isFrozen(c));
+  const frozenColumns = columns.filter(isFrozen);
   const nonFrozenColumns = columns.filter(c => !isFrozen(c));
   columns = frozenColumns.concat(nonFrozenColumns).map((c, i) => {
     c.idx = i;
@@ -97,16 +92,12 @@ function resizeColumn(metrics, index, width) {
   return recalculate(metricsClone);
 }
 
-function areColumnsImmutable(prevColumns, nextColumns) {
-  return isColumnsImmutable(prevColumns) && isColumnsImmutable(nextColumns);
-}
-
 function compareEachColumn(prevColumns, nextColumns, isSameColumn) {
   let i;
   let len;
   let column;
-  const prevColumnsByKey = {};
-  const nextColumnsByKey = {};
+  const prevColumnsByKey = Object.create(null);
+  const nextColumnsByKey = Object.create(null);
 
 
   if (prevColumns.length !== nextColumns.length) {
@@ -138,10 +129,6 @@ function compareEachColumn(prevColumns, nextColumns, isSameColumn) {
 }
 
 function sameColumns(prevColumns, nextColumns, isSameColumn) {
-  if (areColumnsImmutable(prevColumns, nextColumns)) {
-    return prevColumns === nextColumns;
-  }
-
   return compareEachColumn(prevColumns, nextColumns, isSameColumn);
 }
 

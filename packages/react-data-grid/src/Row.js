@@ -57,6 +57,8 @@ class Row extends React.Component {
     height: 35
   };
 
+  cells = new Map();
+
   handleDragEnter = (e) => {
     // Prevent default to allow drop
     e.preventDefault();
@@ -79,12 +81,14 @@ class Row extends React.Component {
     const CellRenderer = this.props.cellRenderer;
     const { idx, cellMetaData, isScrolling, row, isSelected, scrollLeft, lastFrozenColumnIndex } = this.props;
     const { key, formatter } = column;
-    const baseCellProps = { key: `${key}-${idx}`, idx: column.idx, rowIdx: idx, height: this.getRowHeight(), column, cellMetaData };
 
     const cellProps = {
-      ref: (node) => {
-        this[key] = node;
-      },
+      ref: (cell) => cell ? this.cells.set(key, cell) : this.cells.delete(key),
+      idx: column.idx,
+      rowIdx: idx,
+      height: this.getRowHeight(),
+      column,
+      cellMetaData,
       value: this.getCellValue(key || column.idx),
       rowData: row,
       isRowSelected: isSelected,
@@ -95,7 +99,7 @@ class Row extends React.Component {
       lastFrozenColumnIndex
     };
 
-    return <CellRenderer {...baseCellProps} {...cellProps} />;
+    return <CellRenderer key={`${key}-${idx}`} {...cellProps} />;
   };
 
   getCells = () => {
@@ -110,6 +114,8 @@ class Row extends React.Component {
     if (this.row) {
       return this.row.offsetTop;
     }
+
+    return 0;
   };
 
   getRowHeight = () => {
@@ -145,9 +151,9 @@ class Row extends React.Component {
 
   setScrollLeft = (scrollLeft) => {
     this.props.columns.forEach((column) => {
-      if (isFrozen(column)) {
-        if (!this[column.key]) return;
-        this[column.key].setScrollLeft(scrollLeft);
+      const { key } = column;
+      if (isFrozen(column) && this.cells.has(key)) {
+        this.cells.get(key).setScrollLeft(scrollLeft);
       }
     });
   };
