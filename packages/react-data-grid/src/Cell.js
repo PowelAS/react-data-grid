@@ -118,7 +118,7 @@ class Cell extends React.PureComponent {
   };
 
   onCellKeyDown = (e) => {
-    if (this.canExpand() && e.key === 'Enter') {
+    if (this.props.expandableOptions && this.props.expandableOptions.canExpand && e.key === 'Enter') {
       this.onCellExpand(e);
     }
   };
@@ -135,50 +135,33 @@ class Cell extends React.PureComponent {
   };
 
   getStyle = () => {
-    const style = {
+    return {
       position: 'absolute',
       width: this.props.column.width,
       height: this.props.height,
       left: this.props.column.left
     };
-    return style;
-  };
-
-  getFormatter = () => {
-    return this.props.column.formatter;
   };
 
   getRowData = (props = this.props) => {
     return props.rowData.toJSON ? props.rowData.toJSON() : props.rowData;
   };
 
-  getFormatterDependencies = () => {
-    // convention based method to get corresponding Id or Name of any Name or Id property
-    if (typeof this.props.column.getRowMetaData === 'function') {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('getRowMetaData for formatters is deprecated and will be removed in a future version of ReactDataGrid. Instead access row prop of formatter');
-      }
-      return this.props.column.getRowMetaData(this.getRowData(), this.props.column);
-    }
-  };
-
   getCellClass = () => {
     const { idx, lastFrozenColumnIndex } = this.props;
-    const className = joinClasses(
+
+    return joinClasses(
       this.props.column.cellClass,
       'react-grid-Cell',
       this.props.className,
       isFrozen(this.props.column) ? 'react-grid-Cell--frozen' : null,
-      lastFrozenColumnIndex === idx ? 'rdg-last--frozen' : null
-    );
-    const extraClasses = joinClasses(
+      lastFrozenColumnIndex === idx ? 'rdg-last--frozen' : null,
       this.props.isRowSelected && 'row-selected',
       this.isEditorEnabled() && 'editing',
       this.props.tooltip ? 'has-tooltip' : null,
       this.props.expandableOptions && this.props.expandableOptions.subRowDetails && this.props.expandableOptions.treeDepth > 0 ? 'rdg-child-cell' : null,
       this.props.column.isLastColumn && 'last-column'
     );
-    return joinClasses(className, extraClasses);
   };
 
   getUpdateCellClass = () => {
@@ -217,10 +200,6 @@ class Cell extends React.PureComponent {
     }
   };
 
-  canExpand = () => {
-    return this.props.expandableOptions && this.props.expandableOptions.canExpand;
-  };
-
   createColumEventCallBack = (onColumnEvent, info) => {
     return (e) => {
       onColumnEvent(e, info);
@@ -255,8 +234,9 @@ class Cell extends React.PureComponent {
   };
 
   getEvents = () => {
-    const columnEvents = this.props.column ? Object.assign({}, this.props.column.events) : undefined;
-    const onColumnEvent = this.props.cellMetaData ? this.props.cellMetaData.onColumnEvent : undefined;
+    const { column, cellMetaData } = this.props;
+    const columnEvents = column.events;
+    const onColumnEvent = cellMetaData ? cellMetaData.onColumnEvent : undefined;
     const gridEvents = {
       onClick: this.onCellClick,
       onMouseDown: this.onCellMouseDown,
@@ -291,20 +271,27 @@ class Cell extends React.PureComponent {
     this.node = node;
   };
 
-
-  renderCellContent = (props) => {
+  renderCellContent = () => {
+    const { value, column, rowIdx, isExpanded, isScrolling, expandableOptions } = this.props;
     let CellContent;
-    const Formatter = this.getFormatter();
+    const Formatter = column.formatter;
     if (React.isValidElement(Formatter)) {
-      CellContent = React.cloneElement(Formatter, { ...props, dependentValues: this.getFormatterDependencies(), row: this.getRowData() });
+      CellContent = React.cloneElement(Formatter, {
+        value,
+        column,
+        rowIdx,
+        isExpanded,
+        isScrolling,
+        row: this.getRowData()
+      });
     } else if (isFunction(Formatter)) {
-      CellContent = <Formatter value={this.props.value} dependentValues={this.getFormatterDependencies()} isScrolling={this.props.isScrolling} row={this.getRowData()}/>;
+      CellContent = <Formatter value={value} isScrolling={isScrolling} row={this.getRowData()}/>;
     } else {
-      CellContent = <SimpleCellFormatter value={this.props.value} />;
+      CellContent = <SimpleCellFormatter value={value} />;
     }
-    const isExpandCell = this.props.expandableOptions ? this.props.expandableOptions.field === this.props.column.key : false;
-    const treeDepth = this.props.expandableOptions ? this.props.expandableOptions.treeDepth : 0;
-    const marginLeft = this.props.expandableOptions && isExpandCell ? (this.props.expandableOptions.treeDepth * 30) : 0;
+    const isExpandCell = expandableOptions ? this.props.expandableOptions.field === column.key : false;
+    const treeDepth = expandableOptions ? this.props.expandableOptions.treeDepth : 0;
+    const marginLeft = expandableOptions && isExpandCell ? (expandableOptions.treeDepth * 30) : 0;
 
     const cellContentStyle = marginLeft ? {
       marginLeft,
@@ -335,27 +322,19 @@ class Cell extends React.PureComponent {
   };
 
   render() {
-    if (this.props.column.hidden) {
+    const { column, expandableOptions, children } = this.props;
+
+    if (column.hidden) {
       return null;
     }
 
     const style = this.getStyle();
-
     const className = this.getCellClass();
-
     const cellActionButtons = this.getCellActions();
-    const { value, column, rowIdx, isExpanded, isScrolling } = this.props;
-    const cellContent = this.props.children || this.renderCellContent({
-      value,
-      column,
-      rowIdx,
-      isExpanded,
-      isScrolling
-    });
-
+    const cellContent = children || this.renderCellContent();
     const events = this.getEvents();
 
-    const cellExpander =  this.canExpand() && (
+    const cellExpander = expandableOptions && expandableOptions.canExpand && (
       <CellExpand expandableOptions={this.props.expandableOptions} onCellExpand={this.onCellExpand} />
     );
 

@@ -9,12 +9,11 @@ class CheckboxEditor extends React.Component {
     column: PropTypes.shape({
       key: PropTypes.string,
       onCellChange: PropTypes.func
-    }),
-    dependentValues: PropTypes.object
+    })
   };
 
   handleChange = (e) => {
-    this.props.column.onCellChange(this.props.rowIdx, this.props.column.key, this.props.dependentValues, e);
+    this.props.column.onCellChange(this.props.rowIdx, this.props.column.key, this.props.row, e);
   };
 
   render() {
