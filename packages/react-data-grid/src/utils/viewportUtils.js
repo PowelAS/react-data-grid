@@ -15,9 +15,12 @@ const max = Math.max;
 const ceil = Math.ceil;
 
 export const getGridState = (props) => {
+  const { totalWidth, minColumnWidth } = props.columnMetrics;
   const totalNumberColumns = props.columnMetrics.columns.length;
   const canvasHeight = props.minHeight - props.rowOffsetHeight;
   const renderedRowsCount = ceil((props.minHeight - props.rowHeight) / props.rowHeight);
+  const renderedColsCount = ceil((totalWidth - minColumnWidth) / minColumnWidth);
+  const colOverscanEndIdx = min(totalNumberColumns, renderedColsCount * 2);
   const rowOverscanEndIdx = min(props.rowsCount, renderedRowsCount * 2);
   return {
     rowOverscanStartIdx: 0,
@@ -28,9 +31,9 @@ export const getGridState = (props) => {
     scrollTop: 0,
     scrollLeft: 0,
     colVisibleStartIdx: 0,
-    colVisibleEndIdx: totalNumberColumns,
+    colVisibleEndIdx: renderedColsCount,
     colOverscanStartIdx: 0,
-    colOverscanEndIdx: totalNumberColumns,
+    colOverscanEndIdx,
     isScrolling: false,
     lastFrozenColumnIndex: 0,
     totalNumberColumns
