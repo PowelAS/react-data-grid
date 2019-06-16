@@ -8,8 +8,8 @@ const ResizeHandle   = require('./ResizeHandle');
 
 require('../../../themes/react-data-grid-header.css');
 
-function SimpleCellRenderer(objArgs) {
-  const headerText = objArgs.column.rowType === 'header' ? objArgs.column.name : '';
+function SimpleCellRenderer({ column, rowType }) {
+  const headerText = rowType === HeaderRowType.HEADER ? column.name : '';
   return <div className="widget-HeaderCell__value">{headerText}</div>;
 }
 
@@ -63,7 +63,7 @@ class HeaderCell extends React.Component {
   };
 
   getCell = () => {
-    const { height, column, renderer } = this.props;
+    const { height, column, rowType, renderer } = this.props;
     if (React.isValidElement(renderer)) {
       // if it is a string, it's an HTML element, and column is not a valid property, so only pass height
       if (typeof this.props.renderer.type === 'string') {
@@ -71,26 +71,12 @@ class HeaderCell extends React.Component {
       }
       return React.cloneElement(renderer, { column, height });
     }
-    return this.props.renderer({ column });
-  };
-
-  getStyle = () => {
-    return {
-      width: this.props.column.width,
-      left: this.props.column.left,
-      display: 'inline-block',
-      position: 'absolute',
-      height: this.props.height,
-      margin: 0,
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap'
-    };
+    return this.props.renderer({ column, rowType });
   };
 
   setScrollLeft = (scrollLeft) => {
     const node = this.headerCell;
     if (node) {
-      node.style.webkitTransform = `translate3d(${scrollLeft}px, 0px, 0px)`;
       node.style.transform = `translate3d(${scrollLeft}px, 0px, 0px)`;
     }
   };
@@ -98,9 +84,7 @@ class HeaderCell extends React.Component {
   removeScroll = () => {
     const node = this.headerCell;
     if (node) {
-      const transform = 'none';
-      node.style.webkitTransform = transform;
-      node.style.transform = transform;
+      node.style.transform = null;
     }
   };
 
@@ -120,8 +104,20 @@ class HeaderCell extends React.Component {
       this.props.className,
       column.cellClass
     );
+
+    const style = {
+      width: column.width,
+      left: column.left,
+      display: 'inline-block',
+      position: 'absolute',
+      height: this.props.height,
+      margin: 0,
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    };
+
     const cell = (
-      <div ref={this.headerCellRef} className={className} style={this.getStyle()}>
+      <div ref={this.headerCellRef} className={className} style={style}>
         {this.getCell()}
         {resizeHandle}
       </div>

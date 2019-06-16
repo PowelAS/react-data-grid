@@ -125,13 +125,10 @@ class Header extends React.Component {
   };
 
   getColumnMetrics = () => {
-    let columnMetrics;
     if (this.state.resizing) {
-      columnMetrics = this.state.resizing.columnMetrics;
-    } else {
-      columnMetrics = this.props.columnMetrics;
+      return this.state.resizing.columnMetrics;
     }
-    return columnMetrics;
+    return this.props.columnMetrics;
   };
 
   getColumnPosition = (column) => {
@@ -158,13 +155,6 @@ class Header extends React.Component {
     return height;
   };
 
-  getStyle = () => {
-    return {
-      position: 'relative',
-      height: this.getCombinedHeaderHeights()
-    };
-  };
-
   setScrollLeft = (scrollLeft) => {
     const node = ReactDOM.findDOMNode(this.row);
     node.scrollLeft = scrollLeft;
@@ -188,9 +178,13 @@ class Header extends React.Component {
     );
     const headerRows = this.getHeaderRows();
     const { height, onScroll } = this.props;
+    const style = {
+      position: 'relative',
+      height: this.getCombinedHeaderHeights()
+    };
 
     return (
-      <div height={height} onScroll={onScroll} style={this.getStyle()} className={className} onClick={this.onHeaderClick}>
+      <div onScroll={onScroll} style={style} className={className} onClick={this.onHeaderClick}>
         {headerRows}
       </div>
     );

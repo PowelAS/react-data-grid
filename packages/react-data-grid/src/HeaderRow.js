@@ -94,22 +94,13 @@ class HeaderRow extends React.Component {
     }
   };
 
-  getStyle = () => {
-    return {
-      overflow: 'hidden',
-      width: '100%',
-      height: this.props.height,
-      position: 'absolute'
-    };
-  };
-
   getCells = () => {
     const cells = [];
     const frozenCells = [];
     const { columns, rowType } = this.props;
 
     for (let i = 0, len = columns.length; i < len; i++) {
-      const column = { rowType, ...columns[i] };
+      const column = columns[i];
       const { key } = column;
       const _renderer = key === 'select-row' && rowType === HeaderRowType.FILTER ? <div /> : this.getHeaderRenderer(column);
 

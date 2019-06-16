@@ -185,9 +185,7 @@ class Cell extends React.PureComponent {
   setScrollLeft = (scrollLeft) => {
     const node = this.node;
     if (node) {
-      const transform = `translate3d(${scrollLeft}px, 0px, 0px)`;
-      node.style.webkitTransform = transform;
-      node.style.transform = transform;
+      node.style.transform = `translate3d(${scrollLeft}px, 0px, 0px)`;
     }
   };
 
@@ -195,7 +193,6 @@ class Cell extends React.PureComponent {
   removeScroll = () => {
     const node = this.node;
     if (node) {
-      node.style.webkitTransform = null;
       node.style.transform = null;
     }
   };
