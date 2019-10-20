@@ -71,7 +71,7 @@ class HeaderCell extends React.Component {
       }
       return React.cloneElement(renderer, { column, height });
     }
-    return this.props.renderer({ column, rowType });
+    return React.createElement(renderer, { column, rowType });
   };
 
   setScrollLeft = (scrollLeft) => {
