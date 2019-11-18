@@ -282,7 +282,7 @@ class Cell extends React.PureComponent {
         row: this.getRowData()
       });
     } else if (isFunction(Formatter)) {
-      CellContent = <Formatter value={value} isScrolling={isScrolling} row={this.getRowData()}/>;
+      CellContent = <Formatter value={value} column={column} rowIdx={rowIdx} isScrolling={isScrolling} row={this.getRowData()}/>;
     } else {
       CellContent = <SimpleCellFormatter value={value} />;
     }
