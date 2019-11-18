@@ -11,7 +11,7 @@ class SimpleCellFormatter extends React.Component {
   }
 
   render() {
-    return <div title={this.props.value}>{this.props.value}</div>;
+    return <div title={String(this.props.value)}>{this.props.value}</div>;
   }
 }
 
