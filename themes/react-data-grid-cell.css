@@ -148,29 +148,30 @@
 }
 
 .rdg-child-row-action-cross:before {
-  left: 21px;
+  left: 14px;
   width: 1px;
   height: 100%;
 }
 
 .rdg-child-row-action-cross-last:before {
-  left: 21px;
+  left: 14px;
   width: 1px;
 }
 
 .rdg-child-row-action-cross:after, .rdg-child-row-action-cross-last:after {
   top: 50%;
-  left:20px;
+  left: 14px;
   height: 1px;
-  width: 15px;
+  width: 14px;
   content: "";
   position: absolute;
-  background: grey;
+  background: #919189;
 }
 
-.rdg-child-row-action-cross:hover {
-    background: red;
+.rdg-child-row-offset {
+  margin-left: 28px;
 }
+
 .rdg-child-row-btn {
    position:absolute;
    cursor:pointer;

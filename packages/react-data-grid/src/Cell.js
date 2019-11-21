@@ -14,6 +14,7 @@ const defaultCellContentStyle = {
   top: '50%',
   transform: 'translateY(-50%)'
 };
+const SOURCE_COL = 'source';
 
 class Cell extends React.PureComponent {
   static propTypes = {
@@ -269,7 +270,7 @@ class Cell extends React.PureComponent {
   };
 
   renderCellContent = () => {
-    const { value, column, rowIdx, isExpanded, isScrolling, expandableOptions } = this.props;
+    const { value, column, rowIdx, rowData, isExpanded, isScrolling, expandableOptions } = this.props;
     let CellContent;
     const Formatter = column.formatter;
     if (React.isValidElement(Formatter)) {
@@ -298,18 +299,23 @@ class Cell extends React.PureComponent {
     let cellDeleter;
 
     const isDeleteSubRowEnabled = this.props.cellMetaData.onDeleteSubRow ? true : false;
+    const hasReferralBid = this.props.rowData.referralBid !== null;
+    const showChildBidIndicator = hasReferralBid && column.key === SOURCE_COL;
 
-    if (treeDepth > 0 && isExpandCell) {
+    if (showChildBidIndicator) {
+      cellDeleter = <div className="rdg-child-row-action-cross-last" />;
+    } else if (treeDepth > 0 && isExpandCell) {
       cellDeleter = <ChildRowDeleteButton treeDepth={treeDepth} cellHeight={this.props.height} siblingIndex={this.props.expandableOptions.subRowDetails.siblingIndex} numberSiblings={this.props.expandableOptions.subRowDetails.numberSiblings} onDeleteSubRow={this.onDeleteSubRow} isDeleteSubRowEnabled={isDeleteSubRowEnabled} />;
     }
 
     const tooltip = this.props.tooltip && (<span className="cell-tooltip-text">{this.props.tooltip}</span>);
     const classes = joinClasses('react-grid-Cell__value', this.props.tooltip ? 'cell-tooltip' : null);
+    const cellContentClass = showChildBidIndicator ? 'rdg-child-row-offset' : undefined;
 
     return (
       <div className={classes}>
         {cellDeleter}
-        <div style={cellContentStyle}>
+        <div style={cellContentStyle} className={cellContentClass}>
           <span>{CellContent}</span>
           {this.props.cellControls}
         </div>
