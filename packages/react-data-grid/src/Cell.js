@@ -300,7 +300,8 @@ class Cell extends React.PureComponent {
 
     const isDeleteSubRowEnabled = this.props.cellMetaData.onDeleteSubRow ? true : false;
     const hasReferralBid = this.props.rowData.referralBid !== null;
-    const showChildBidIndicator = hasReferralBid && column.key === SOURCE_COL;
+    const isBaseBid = this.props.rowData.isBaseBid === true;
+    const showChildBidIndicator = (hasReferralBid || isBaseBid) && column.key === SOURCE_COL;
 
     if (showChildBidIndicator) {
       cellDeleter = <div className="rdg-child-row-action-cross-last" />;

@@ -634,7 +634,7 @@ class ReactDataGrid extends React.Component {
         const selectedRows = [];
         for (let i = 0; i < this.props.rowsCount; i++) {
           const rowData = this.props.rowGetter(i);
-          if (!RowUtils.isRowSelected(keys, indexes, isSelectedKey, rowData, i)) {
+          if (!RowUtils.isRowSelected(keys, indexes, isSelectedKey, rowData, i) && !rowData.isBaseBid) {
             selectedRows.push({ rowIdx: i, row: rowData });
           }
         }
