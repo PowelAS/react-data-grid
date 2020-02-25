@@ -7,6 +7,10 @@ const RowUtils = {
     return row[property];
   },
   isRowSelected(keys, indexes, isSelectedKey, rowData, rowIdx) {
+    if (rowData && rowData.isBaseBid) {
+      return false;
+    }
+
     if (indexes && Array.isArray(indexes)) {
       return indexes.indexOf(rowIdx) > -1;
     } else if (keys && keys.rowKey && keys.values && Array.isArray(keys.values)) {
