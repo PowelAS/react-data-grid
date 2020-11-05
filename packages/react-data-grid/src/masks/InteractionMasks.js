@@ -66,7 +66,6 @@ class InteractionMasks extends React.Component {
     onCellRangeSelectionStarted: PropTypes.func,
     onCellRangeSelectionUpdated: PropTypes.func,
     onCellRangeSelectionCompleted: PropTypes.func,
-    onCellsDragged: PropTypes.func,
     onDragHandleDoubleClick: PropTypes.func.isRequired,
     scrollLeft: PropTypes.number.isRequired,
     scrollTop: PropTypes.number.isRequired,
@@ -564,8 +563,11 @@ class InteractionMasks extends React.Component {
   };
 
   isDragEnabled = () => {
-    const { onGridRowsUpdated, onCellsDragged } = this.props;
-    return this.isSelectedCellEditable() && (isFunction(onGridRowsUpdated) || isFunction(onCellsDragged));
+    const { onGridRowsUpdated, columns } = this.props;
+    const { selectedPosition: { idx } } = this.state;
+    const selectedColumn = columns[idx];
+
+    return this.isSelectedCellEditable() && selectedColumn.draggable && isFunction(onGridRowsUpdated);
   };
 
   handleDragStart = (e) => {
@@ -601,16 +603,13 @@ class InteractionMasks extends React.Component {
     if (draggedPosition != null) {
       const { rowIdx, overRowIdx } = draggedPosition;
       if (overRowIdx != null) {
-        const { columns, onCellsDragged, onGridRowsUpdated, rowGetter } = this.props;
+        const { columns, onGridRowsUpdated, rowGetter } = this.props;
         const column = getSelectedColumn({ selectedPosition: draggedPosition, columns });
         const value = getSelectedCellValue({ selectedPosition: draggedPosition, columns, rowGetter });
         const cellKey = column.key;
         const fromRow = rowIdx < overRowIdx ? rowIdx : overRowIdx;
         const toRow = rowIdx > overRowIdx ? rowIdx : overRowIdx;
 
-        if (isFunction(onCellsDragged)) {
-          onCellsDragged({ cellKey, fromRow, toRow, value });
-        }
         if (isFunction(onGridRowsUpdated)) {
           onGridRowsUpdated(cellKey, fromRow, toRow, { [cellKey]: value }, UpdateActions.CELL_DRAG);
         }
@@ -698,6 +697,7 @@ class InteractionMasks extends React.Component {
     const { isEditorEnabled, firstEditorKeyPress, selectedPosition, draggedPosition, copiedPosition } = this.state;
     const rowData = getSelectedRow({ selectedPosition, rowGetter });
     const columns = getRowColumns(selectedPosition.rowIdx);
+
     return (
       <div
         onKeyDown={this.onKeyDown}
