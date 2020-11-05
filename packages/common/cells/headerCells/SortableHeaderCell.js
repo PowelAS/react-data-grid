@@ -7,6 +7,11 @@ const DEFINE_SORT = {
   NONE: 'NONE'
 };
 
+const unicodeKeys = {
+  ASC: '9650',
+  DESC: '9660'
+};
+
 class SortableHeaderCell extends React.Component {
   static propTypes = {
     columnKey: PropTypes.string.isRequired,
@@ -40,11 +45,21 @@ class SortableHeaderCell extends React.Component {
   };
 
   getSortByText = () => {
-    const unicodeKeys = {
-      ASC: '9650',
-      DESC: '9660'
-    };
     return this.props.sortDirection === 'NONE' ? '' : String.fromCharCode(unicodeKeys[this.props.sortDirection]);
+  };
+
+  getCell = () => {
+    const { headerRenderer, column } = this.props;
+
+    if (headerRenderer == null) {
+      return column.name;
+    }
+
+    if (React.isValidElement(headerRenderer)) {
+      return React.cloneElement(headerRenderer, this.props);
+    }
+
+    return React.createElement(headerRenderer, this.props);
   };
 
   render() {
@@ -53,13 +68,12 @@ class SortableHeaderCell extends React.Component {
       'react-grid-HeaderCell-sortable--ascending': this.props.sortDirection === 'ASC',
       'react-grid-HeaderCell-sortable--descending': this.props.sortDirection === 'DESC'
     });
-    const content = this.props.headerRenderer ? React.cloneElement(this.props.headerRenderer, this.props) :  this.props.column.name;
     return (
       <div className={className}
         onClick={this.onClick}
         style={{ cursor: 'pointer' }}>
         <span className="pull-right">{this.getSortByText()}</span>
-        {content}
+        {this.getCell()}
       </div>
     );
   }
