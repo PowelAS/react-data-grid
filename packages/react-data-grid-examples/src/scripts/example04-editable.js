@@ -11,36 +11,49 @@ class Example extends React.Component {
         key: 'id',
         name: 'ID',
         width: 80
+
       },
       {
         key: 'task',
         name: 'Title',
-        editable: true
+        editable: true,
+        areCellsDraggable: true
+
       },
       {
         key: 'priority',
         name: 'Priority',
-        editable: true
+        editable: true,
+        areCellsDraggable: true
+
       },
       {
         key: 'issueType',
         name: 'Issue Type',
-        editable: true
+        editable: true,
+        areCellsDraggable: true
+
       },
       {
         key: 'complete',
         name: '% Complete',
-        editable: true
+        editable: true,
+        areCellsDraggable: true
+
       },
       {
         key: 'startDate',
         name: 'Start Date',
-        editable: true
+        editable: true,
+        areCellsDraggable: true
+
       },
       {
         key: 'completeDate',
         name: 'Expected Complete',
-        editable: true
+        editable: true,
+        areCellsDraggable: true
+
       }
     ];
 
@@ -52,7 +65,7 @@ class Example extends React.Component {
   };
 
   createRows = (numberOfRows) => {
-    let rows = [];
+    const rows = [];
     for (let i = 1; i < numberOfRows; i++) {
       rows.push({
         id: i,
@@ -72,11 +85,11 @@ class Example extends React.Component {
   };
 
   handleGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-    let rows = this.state.rows.slice();
+    const rows = this.state.rows.slice();
 
     for (let i = fromRow; i <= toRow; i++) {
-      let rowToUpdate = rows[i];
-      let updatedRow = update(rowToUpdate, {$merge: updated});
+      const rowToUpdate = rows[i];
+      const updatedRow = update(rowToUpdate, { $merge: updated });
       rows[i] = updatedRow;
     }
 

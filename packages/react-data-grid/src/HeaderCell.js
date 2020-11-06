@@ -123,17 +123,17 @@ class HeaderCell extends React.Component {
       </div>
     );
 
-    if (rowType === HeaderRowType.HEADER && column.draggable) {
-      const { draggableHeaderCell: DraggableHeaderCell } = this.props;
-      return (
-        <DraggableHeaderCell
-          column={column}
-          onHeaderDrop={this.props.onHeaderDrop}
-        >
-          {cell}
-        </DraggableHeaderCell>
-      );
-    }
+    // if (rowType === HeaderRowType.HEADER && column.draggable) {
+    //   const { draggableHeaderCell: DraggableHeaderCell } = this.props;
+    //   return (
+    //     <DraggableHeaderCell
+    //       column={column}
+    //       onHeaderDrop={this.props.onHeaderDrop}
+    //     >
+    //       {cell}
+    //     </DraggableHeaderCell>
+    //   );
+    // }
     return cell;
   }
 }

@@ -6,7 +6,7 @@ import SimpleCellFormatter from './formatters/SimpleCellFormatter';
 import CellAction from './CellAction';
 import CellExpand from './CellExpander';
 import ChildRowDeleteButton from './ChildRowDeleteButton';
-import { isFrozen } from './ColumnUtils';
+import { isFrozen, canEdit } from './ColumnUtils';
 require('../../../themes/react-data-grid-cell.css');
 
 const defaultCellContentStyle = {
@@ -131,7 +131,25 @@ class Cell extends React.PureComponent {
     }
   };
 
-  onDragOver = (e) => {
+  handleDragEnter = (e) => {
+    // Prevent default to allow drop
+    e.preventDefault();
+    const { column, rowData, cellMetaData } = this.props;
+    const row = rowData[cellMetaData.rowKey];
+
+    if (column.areCellsDraggable && canEdit(column, row, cellMetaData.enableCellSelect)) {
+      cellMetaData.onDragEnter({ overCellIdx: column.idx });
+    }
+  };
+
+  handleDragOver = (e) => {
+    e.dataTransfer.dropEffect = 'copy';
+    e.preventDefault();
+  };
+
+  handleDrop = (e) => {
+    // The default in Firefox is to treat data in dataTransfer as a URL and perform navigation on it, even if the data type used is 'text'
+    // To bypass this, we need to capture and prevent the drop event.
     e.preventDefault();
   };
 
@@ -190,7 +208,6 @@ class Cell extends React.PureComponent {
     }
   };
 
-
   removeScroll = () => {
     const node = this.node;
     if (node) {
@@ -241,7 +258,9 @@ class Cell extends React.PureComponent {
       onMouseEnter: this.onCellMouseEnter,
       onDoubleClick: this.onCellDoubleClick,
       onContextMenu: this.onCellContextMenu,
-      onDragOver: this.onDragOver
+      onDragEnter: this.handleDragEnter,
+      onDragOver: this.handleDragOver,
+      onDrop: this.handleDrop
     };
 
     if (!columnEvents || !onColumnEvent) {

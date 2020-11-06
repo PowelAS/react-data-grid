@@ -44,3 +44,5 @@ export const last = arrayOrList => {
 
   throw new Error('Cant get last of: ' + typeof (arrayOrList));
 };
+
+export const range = (start, end) => Array(end - start + 1).fill().map((_, idx) => start + idx);

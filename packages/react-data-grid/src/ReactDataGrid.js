@@ -6,7 +6,7 @@ import CheckboxEditor from 'common/editors/CheckboxEditor';
 import RowUtils from './RowUtils';
 import { getColumn } from './ColumnUtils';
 import KeyCodes from './KeyCodes';
-import { isFunction } from 'common/utils';
+import { isFunction, range } from 'common/utils';
 import SelectAll from './formatters/SelectAll';
 import { DEFINE_SORT } from 'common/cells/headerCells/SortableHeaderCell';
 const ColumnMetrics = require('./ColumnMetrics');
@@ -292,8 +292,8 @@ class ReactDataGrid extends React.Component {
     this.eventBus.dispatch(EventTypes.SELECT_END);
   };
 
-  handleDragEnter = ({ overRowIdx }) => {
-    this.eventBus.dispatch(EventTypes.DRAG_ENTER, { overRowIdx });
+  handleDragEnter = ({ overCellIdx }) => {
+    this.eventBus.dispatch(EventTypes.DRAG_ENTER, { overCellIdx });
   };
 
   gridWidth = () => {
@@ -440,8 +440,19 @@ class ReactDataGrid extends React.Component {
     }
 
     if (this.props.onGridRowsUpdated) {
+      const { columns } = this.props;
       const cellKey = this.getColumn(e.idx).key;
-      this.onGridRowsUpdated(cellKey, e.rowIdx, this.props.rowsCount - 1, { [cellKey]: e.rowData[cellKey] }, UpdateActions.COLUMN_FILL);
+      const fromCellIdx = e.idx;
+      const toCellIdx = columns.length - 1;
+      const value = e.rowData[cellKey];
+      // eslint-disable-next-line no-shadow
+      const updated = range(fromCellIdx, toCellIdx).reduce((updated, cellIdx) => {
+        const column = columns[cellIdx];
+        updated[column.key] = value;
+        return updated;
+      }, {});
+
+      this.onGridRowsUpdated(cellKey, e.rowIdx, e.rowIdx, updated, UpdateActions.COLUMN_FILL);
     }
   };
 
@@ -771,6 +782,7 @@ class ReactDataGrid extends React.Component {
   render() {
     const cellMetaData = {
       rowKey: this.props.rowKey,
+      enableCellSelect: this.props.enableCellSelect,
       onCellClick: this.onCellClick,
       onCellContextMenu: this.onCellContextMenu,
       onCellDoubleClick: this.onCellDoubleClick,

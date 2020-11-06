@@ -20,7 +20,7 @@ import {
   isSelectedCellEditable,
   selectedRangeIsSingleCell
 } from '../utils/SelectedCellUtils';
-import { isFunction } from 'common/utils';
+import { isFunction, range } from 'common/utils';
 import { isFrozen } from '../ColumnUtils';
 import * as keyCodes from '../KeyCodes';
 import { CellNavigationMode, EventTypes } from 'common/constants';
@@ -567,7 +567,7 @@ class InteractionMasks extends React.Component {
     const { selectedPosition: { idx } } = this.state;
     const selectedColumn = columns[idx];
 
-    return this.isSelectedCellEditable() && selectedColumn.draggable && isFunction(onGridRowsUpdated);
+    return this.isSelectedCellEditable() && selectedColumn.areCellsDraggable && isFunction(onGridRowsUpdated);
   };
 
   handleDragStart = (e) => {
@@ -590,10 +590,10 @@ class InteractionMasks extends React.Component {
     }
   };
 
-  handleDragEnter = ({ overRowIdx }) => {
+  handleDragEnter = ({ overCellIdx }) => {
     if (this.state.draggedPosition != null) {
       this.setState(({ draggedPosition }) => ({
-        draggedPosition: { ...draggedPosition, overRowIdx }
+        draggedPosition: { ...draggedPosition, overCellIdx }
       }));
     }
   };
@@ -601,17 +601,23 @@ class InteractionMasks extends React.Component {
   handleDragEnd = () => {
     const { draggedPosition } = this.state;
     if (draggedPosition != null) {
-      const { rowIdx, overRowIdx } = draggedPosition;
-      if (overRowIdx != null) {
+      const { idx, rowIdx, overCellIdx } = draggedPosition;
+      if (overCellIdx != null) {
         const { columns, onGridRowsUpdated, rowGetter } = this.props;
-        const column = getSelectedColumn({ selectedPosition: draggedPosition, columns });
+        const selectedColumn = getSelectedColumn({ selectedPosition: draggedPosition, columns });
         const value = getSelectedCellValue({ selectedPosition: draggedPosition, columns, rowGetter });
-        const cellKey = column.key;
-        const fromRow = rowIdx < overRowIdx ? rowIdx : overRowIdx;
-        const toRow = rowIdx > overRowIdx ? rowIdx : overRowIdx;
+        const cellKey = selectedColumn.key;
+        const fromCellIdx = idx < overCellIdx ? idx : overCellIdx;
+        const toCellIdx = idx > overCellIdx ? idx : overCellIdx;
+        // eslint-disable-next-line no-shadow
+        const updated = range(fromCellIdx, toCellIdx).reduce((updated, cellIdx) => {
+          const column = columns[cellIdx];
+          updated[column.key] = value;
+          return updated;
+        }, {});
 
         if (isFunction(onGridRowsUpdated)) {
-          onGridRowsUpdated(cellKey, fromRow, toRow, { [cellKey]: value }, UpdateActions.CELL_DRAG);
+          onGridRowsUpdated(cellKey, rowIdx, rowIdx, updated, UpdateActions.CELL_DRAG);
         }
       }
       this.setState({

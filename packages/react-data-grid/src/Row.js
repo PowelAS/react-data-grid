@@ -59,24 +59,6 @@ class Row extends React.Component {
 
   cells = new Map();
 
-  handleDragEnter = (e) => {
-    // Prevent default to allow drop
-    e.preventDefault();
-    const { idx, cellMetaData: { onDragEnter } } = this.props;
-    onDragEnter({ overRowIdx: idx });
-  };
-
-  handleDragOver = (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'copy';
-  };
-
-  handleDrop = (e) => {
-    // The default in Firefox is to treat data in dataTransfer as a URL and perform navigation on it, even if the data type used is 'text'
-    // To bypass this, we need to capture and prevent the drop event.
-    e.preventDefault();
-  };
-
   getCell = (column) => {
     const CellRenderer = this.props.cellRenderer;
     const { idx, cellMetaData, isScrolling, row, isSelected, scrollLeft, lastFrozenColumnIndex } = this.props;
@@ -180,9 +162,6 @@ class Row extends React.Component {
         ref={this.setRowRef}
         className={className}
         style={style}
-        onDragEnter={this.handleDragEnter}
-        onDragOver={this.handleDragOver}
-        onDrop={this.handleDrop}
       >
         {
           this.getCells()
