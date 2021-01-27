@@ -135,9 +135,8 @@ class Cell extends React.PureComponent {
     // Prevent default to allow drop
     e.preventDefault();
     const { column, rowData, cellMetaData } = this.props;
-    const row = rowData[cellMetaData.rowKey];
 
-    if (column.areCellsDraggable && canEdit(column, row, cellMetaData.enableCellSelect)) {
+    if (column.areCellsDraggable && canEdit(column, rowData, cellMetaData.enableCellSelect)) {
       cellMetaData.onDragEnter({ overCellIdx: column.idx });
     }
   };
